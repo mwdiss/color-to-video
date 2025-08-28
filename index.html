@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Solid Color Video Generator</title>
+<style>
+  body { background:#000; color:#fff; font-family:sans-serif; text-align:center; }
+  .box { margin:20px auto; max-width:600px; padding:20px; background:#111; border-radius:8px; }
+  label { display:block; margin-top:10px; }
+  input, select, button { padding:6px; margin-top:5px; width:100%; }
+  #progress { margin-top:15px; height:10px; background:#333; border-radius:5px; overflow:hidden; }
+  #bar { height:100%; width:0; background:#0f0; }
+  #download { display:none; margin-top:15px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>Solid Color Video Generator (Web)</h2>
+  <label>Hex color</label>
+  <input type="text" id="hex" value="#008B8B">
+  <input type="color" id="picker" value="#008B8B">
+
+  <label>Resolution (WxH)</label>
+  <input type="text" id="res" value="1920x1080">
+
+  <label>FPS</label>
+  <input type="number" id="fps" value="60">
+
+  <label>Duration (seconds)</label>
+  <input type="number" id="dur" value="10">
+
+  <label>Engine (codec hint)</label>
+  <select id="engine">
+    <option value="video/webm;codecs=vp9">VP9 (WebM)</option>
+    <option value="video/webm;codecs=vp8">VP8 (WebM)</option>
+    <option value="video/mp4;codecs=avc1">H264 (MP4)</option>
+  </select>
+
+  <label>Output filename</label>
+  <input type="text" id="out" value="output.mp4">
+
+  <button id="start">Generate</button>
+  <div id="progress"><div id="bar"></div></div>
+  <a id="download" download>Download</a>
+</div>
+
+<script>
+function parseRes(str){
+  const m = str.toLowerCase().match(/(\d+)x(\d+)/);
+  if(!m) throw "Invalid resolution";
+  return [parseInt(m[1]), parseInt(m[2])];
+}
+
+document.getElementById("picker").addEventListener("input", e=>{
+  document.getElementById("hex").value = e.target.value;
+});
+
+document.getElementById("start").addEventListener("click", async ()=>{
+  const hex = document.getElementById("hex").value;
+  const [w,h] = parseRes(document.getElementById("res").value);
+  const fps = parseInt(document.getElementById("fps").value);
+  const dur = parseFloat(document.getElementById("dur").value);
+  const engine = document.getElementById("engine").value;
+  const outname = document.getElementById("out").value || hex.replace("#","")+".webm";
+
+  // Canvas
+  const canvas = document.createElement("canvas");
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+
+  // MediaRecorder
+  const stream = canvas.captureStream(fps);
+  if(!MediaRecorder.isTypeSupported(engine)){
+    alert("Codec not supported: "+engine);
+    return;
+  }
+  const rec = new MediaRecorder(stream,{mimeType:engine,videoBitsPerSecond:10_000_000});
+  let chunks=[];
+  rec.ondataavailable=e=>{ if(e.data.size>0) chunks.push(e.data); };
+  rec.onstop=()=>{
+    const blob = new Blob(chunks,{type:engine});
+    const url = URL.createObjectURL(blob);
+    const dl = document.getElementById("download");
+    dl.href = url;
+    dl.download = outname;
+    dl.style.display="inline-block";
+    dl.textContent="Download "+outname;
+    document.getElementById("bar").style.width="100%";
+  };
+
+  rec.start();
+  const totalFrames = Math.round(fps*dur);
+  let frames=0;
+  const bar=document.getElementById("bar");
+
+  const timer=setInterval(()=>{
+    ctx.fillStyle=hex;
+    ctx.fillRect(0,0,w,h);
+    frames++;
+    bar.style.width=(frames/totalFrames*100)+"%";
+    if(frames>=totalFrames){
+      clearInterval(timer);
+      rec.stop();
+      stream.getTracks().forEach(t=>t.stop());
+    }
+  },1000/fps);
+});
+</script>
+</body>
+</html>
