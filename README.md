@@ -30,27 +30,27 @@ Useful for testing, placeholders, or demo purposes.
 Requires **Python 3.8+**, `imageio`, `numpy`, and FFmpeg installed.
 
 Run:
-pip install imageio numpy
+`pip install imageio numpy`
 
 
 Example:
-python solid_color_video.py -hex "#008B8B" -q 1920x1080 -fps 60 -t 10 -bit 10m -engine h264 -out 008B8B.mp4
+`python solid_color_video.py -hex "#008B8B" -q 1920x1080 -fps 60 -t 10 -bit 10m -engine h264 -out 008B8B.mp4`
 
 
 Arguments:
--hex (required) → Hex color (#RRGGBB or #RGB)
+`-hex` (required) → Hex color (#RRGGBB or #RGB)
 
--q → Resolution (default: 1920x1080)
+`-q` → Resolution (default: 1920x1080)
 
--fps → Frames per second (default: 60)
+`-fps` → Frames per second (default: 60)
 
--t → Duration in seconds (default: 10)
+`-t` → Duration in seconds (default: 10)
 
--bit → Bitrate (10k, 500k, 2m, 0.01g; default: 10m)
+`-bit` → Bitrate (10k, 500k, 2m, 0.01g; default: 10m)
 
--engine → Codec (h264 or h265; default: h264)
+`-engine` → Codec (h264 or h265; default: h264)
 
--out → Output filename (default: <hex>.mp4)
+`-out` → Output filename (default: <hex>.mp4)
 
 ---
 
