@@ -52,26 +52,26 @@ Arguments:
 
 -out → Output filename (default: <hex>.mp4)
 
+---
 
 🌐 Web usage
 Just open index.html in any modern browser (tested in Chrome/Edge/OperaGX/Firefox).
 Runs entirely client-side — no server required.
 
 Features:
-Color input (hex field + palette picker)
+- Color input (hex field + palette picker)
+- Resolution, FPS, Duration
+- Codec selector (H264, VP8, VP9 depending on browser)
+- Download button when video is ready
 
-Resolution, FPS, Duration
-
-Codec selector (H264, VP8, VP9 depending on browser)
-
-Download button when video is ready
-
+---
 
 📜 License
 This project is licensed under the GNU General Public License v3.0 (GPLv3).
 You are free to use, modify, and distribute it under the same license.
 
-🙌 Credits
-Python implementation: imageio + FFmpeg
+---
 
-Web implementation: HTML5 <canvas> + MediaRecorder API
+🙌 Credits
+Python implementation: `imageio` + `FFmpeg`
+Web implementation: `HTML5 <canvas>` + `MediaRecorder API`
